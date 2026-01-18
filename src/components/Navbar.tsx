@@ -53,7 +53,7 @@ export function Navbar() {
       transition={{ duration: 0.6, ease: "easeOut" }}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-[#E5E7EB]"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-[#E5E7EB] rounded-b-2xl overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div ref={navInnerRef} className="flex items-center justify-between h-20 transform-gpu">
