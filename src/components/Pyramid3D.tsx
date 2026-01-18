@@ -78,46 +78,17 @@ function PyramidGroup() {
 export function Pyramid3D() {
   return (
     <div className="relative w-full h-[400px] md:h-[500px]">
-      {/* subtle radial backdrop to help the crystal pyramid read on white backgrounds */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      {/* single soft radial glow behind the pyramid */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10">
         <div
           className="rounded-full blur-3xl"
           style={{
-            width: 640,
-            height: 640,
-            background: 'radial-gradient(circle at 50% 45%, rgba(6,63,80,0.12), rgba(6,63,80,0.04) 35%, rgba(255,255,255,0) 60%)'
+            width: 760,
+            height: 760,
+            background: 'radial-gradient(circle at 50% 45%, rgba(0,179,198,0.22), rgba(0,179,198,0.12) 30%, rgba(255,255,255,0) 60%)',
+            boxShadow: '0 40px 120px rgba(0,179,198,0.14), inset 0 0 80px rgba(255,214,165,0.06)'
           }}
         />
-      </div>
-
-      {/* colorful splash behind the pyramid for depth */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <svg
-          width="900"
-          height="900"
-          viewBox="0 0 900 900"
-          className="-z-10 blur-[36px] opacity-70"
-          aria-hidden
-        >
-          <defs>
-            <radialGradient id="g1" cx="40%" cy="35%" r="50%">
-              <stop offset="0%" stopColor="#00B3C6" stopOpacity="0.95"/>
-              <stop offset="60%" stopColor="#006B8F" stopOpacity="0.25"/>
-              <stop offset="100%" stopColor="transparent" stopOpacity="0"/>
-            </radialGradient>
-            <radialGradient id="g2" cx="65%" cy="65%" r="45%">
-              <stop offset="0%" stopColor="#FFD6A5" stopOpacity="0.9"/>
-              <stop offset="50%" stopColor="#FF9F7A" stopOpacity="0.15"/>
-              <stop offset="100%" stopColor="transparent" stopOpacity="0"/>
-            </radialGradient>
-          </defs>
-          <circle cx="360" cy="260" r="260" fill="url(#g1)" />
-          <circle cx="560" cy="520" r="220" fill="url(#g2)" />
-          <g transform="translate(200,500) rotate(-20)" fill="#00D4E8" opacity="0.12">
-            <ellipse cx="0" cy="0" rx="160" ry="60" />
-            <ellipse cx="120" cy="-40" rx="140" ry="50" />
-          </g>
-        </svg>
       </div>
 
       <Canvas camera={{ position: [0, 0, 9], fov: 38 }} style={{ background: 'transparent' }}>
@@ -128,6 +99,7 @@ export function Pyramid3D() {
         <pointLight position={[2, 4, 3]} intensity={0.9} color="#FFD6A5" />
         {/* Cool fill to enhance cyan reflections */}
         <pointLight position={[-2, -2, 4]} intensity={0.6} color="#00D4E8" />
+        {/* background glow handled via DOM overlay for a clean, soft bloom */}
         <PyramidGroup />
         <Environment preset="studio" />
       </Canvas>
