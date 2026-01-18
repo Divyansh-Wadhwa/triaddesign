@@ -57,7 +57,7 @@ export function Navbar() {
     >
       {/* top utility bar removed per design request */}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div ref={navInnerRef} className="grid grid-cols-3 items-center h-24 transform-gpu">
           {/* Left: logo */}
           <div className="flex items-center">
