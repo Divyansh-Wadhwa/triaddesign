@@ -3,7 +3,7 @@
 import React, { useState, useRef } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X } from "lucide-react"
+import { Menu, X, ShoppingCart, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 // navbar 3D tilt uses simple DOM transforms (no R3F hooks)
@@ -47,46 +47,70 @@ export function Navbar() {
   }
 
   return (
-    <motion.nav 
-      initial={{ y: -100 }}
+    <motion.nav
+      initial={{ y: -120 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-[#E5E7EB] rounded-b-2xl overflow-hidden"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-[#E5E7EB] rounded-b-3xl overflow-hidden shadow-sm"
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div ref={navInnerRef} className="flex items-center justify-between h-20 transform-gpu">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex items-center gap-3">
+      {/* Top thin utility bar */}
+      <div className="hidden md:flex items-center justify-between px-6 lg:px-8 h-6 bg-gray-100 text-xs text-gray-600">
+        <div className="flex items-center gap-3">
+          <span className="font-medium">Customer Care</span>
+          <a href="tel:+10124189284903" className="text-[#6B21A8]">+10124189284903</a>
+        </div>
+        <div className="flex items-center gap-6 text-sm">
+          <a href="#" className="hover:text-[#00B3C6]">Stores</a>
+          <a href="#" className="hover:text-[#00B3C6]">Support</a>
+          <a href="#" className="hover:text-[#00B3C6]">Privacy & Policy</a>
+          <a href="#" className="hover:text-[#00B3C6]">Newsletter</a>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div ref={navInnerRef} className="grid grid-cols-3 items-center h-24 transform-gpu">
+          {/* Left: logo */}
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center gap-3">
               <img src="/logo.svg" alt="TRIAD Academy" className="h-12 w-auto" />
-              <div className="leading-tight">
+              <div className="leading-tight hidden sm:block">
                 <div className="text-lg font-bold text-[#1F242B]">TRIAD Academy</div>
               </div>
-            </div>
-          </Link>
-          
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link 
-                key={link.href}
-                href={link.href}
-                className="text-[#1F242B] hover:text-[#00B3C6] transition-colors font-medium text-sm tracking-wide"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Button className="bg-[#00B3C6] hover:bg-[#009DAD] text-white px-6 rounded-full">
-              Get Started
-            </Button>
+            </Link>
           </div>
 
-          <button 
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-[#1F242B]"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* Center: nav links (centered) */}
+          <div className="flex items-center justify-center">
+            <nav className="hidden md:flex items-center gap-10">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-[#1F242B] hover:text-[#00B3C6] transition-colors font-medium text-sm tracking-wide"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Right: actions */}
+          <div className="flex items-center justify-end gap-4">
+            <div className="hidden md:flex items-center gap-4">
+              <button aria-label="cart" className="text-[#1F242B] hover:text-[#00B3C6]"><ShoppingCart size={20} /></button>
+              <button aria-label="account" className="text-[#1F242B] hover:text-[#00B3C6]"><User size={20} /></button>
+              <Button className="bg-[#00B3C6] hover:bg-[#009DAD] text-white px-5 py-2 rounded-full">Get Started</Button>
+            </div>
+
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden p-2 text-[#1F242B]"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </div>
 
