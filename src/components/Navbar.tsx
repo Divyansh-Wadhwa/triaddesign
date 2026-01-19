@@ -1,9 +1,9 @@
 "use client"
 
-import React, { useState, useRef } from "react"
+import React, { useState } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, User } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 // navbar 3D tilt uses simple DOM transforms (no R3F hooks)
@@ -18,89 +18,61 @@ const navLinks = [
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const navInnerRef = useRef<HTMLDivElement | null>(null)
-  const rafRef = useRef<number | null>(null)
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    const el = navInnerRef.current
-    if (!el) return
-    const rect = el.getBoundingClientRect()
-    const x = (e.clientX - rect.left) / rect.width - 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5
-    const rotY = x * 6 // degrees
-    const rotX = -y * 6
-    if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    rafRef.current = requestAnimationFrame(() => {
-      el.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg)`
-      el.style.transition = 'transform 120ms linear'
-    })
-  }
-
-  const handlePointerLeave = () => {
-    const el = navInnerRef.current
-    if (!el) return
-    if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    rafRef.current = requestAnimationFrame(() => {
-      el.style.transform = 'none'
-      el.style.transition = 'transform 300ms ease'
-    })
-  }
 
   return (
     <motion.nav
-      initial={{ y: -120 }}
+      initial={{ y: -80 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-[#E5E7EB] rounded-b-[48px] overflow-hidden shadow-sm"
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="fixed top-4 left-0 right-0 z-50"
     >
-      {/* top utility bar removed per design request */}
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div ref={navInnerRef} className="grid grid-cols-3 items-center h-24 transform-gpu">
-          {/* Left: logo */}
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-3">
-              <img src="/logo.svg" alt="TRIAD Academy" className="h-12 w-auto" />
-              <div className="leading-tight hidden sm:block">
-                <div className="text-lg font-bold text-[#1F242B]">TRIAD Academy</div>
-              </div>
-            </Link>
-          </div>
-
-          {/* Center: nav links (centered) */}
-          <div className="flex items-center justify-center">
-            <nav className="hidden md:flex items-center gap-10">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-[#1F242B] hover:text-[#00B3C6] transition-colors font-medium text-sm tracking-wide"
-                >
-                  {link.label}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="bg-white/95 backdrop-blur-sm rounded-[48px] border border-[#E5E7EB] shadow-sm">
+            {/* Capsule content: three columns (logo, centered links, actions) */}
+            <div className="grid grid-cols-3 items-center h-16 px-4 md:px-6">
+              {/* Left: logo */}
+              <div className="flex items-center">
+                <Link href="/" className="flex items-center gap-3">
+                  <img src="/logo.svg" alt="TRIAD Academy" className="h-10 w-auto" />
+                  <div className="leading-tight hidden sm:block">
+                    <div className="text-base font-bold text-[#1F242B]">TRIAD Academy</div>
+                  </div>
                 </Link>
-              ))}
-            </nav>
-          </div>
+              </div>
 
-          {/* Right: actions */}
-          <div className="flex items-center justify-end gap-4">
-            <div className="hidden md:flex items-center gap-4">
-              <button aria-label="account" className="text-[#1F242B] hover:text-[#00B3C6]"><User size={20} /></button>
-              <Button className="bg-[#00B3C6] hover:bg-[#009DAD] text-white px-5 py-2 rounded-full">Get Started</Button>
+              {/* Center: nav links (centered) */}
+              <div className="flex items-center justify-center">
+                <nav className="hidden md:flex items-center gap-8">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="text-[#1F242B] hover:text-[#00B3C6] transition-colors font-medium text-sm tracking-wide"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+
+              {/* Right: actions (CTA + mobile toggle) */}
+              <div className="flex items-center justify-end gap-4">
+                <div className="hidden md:flex items-center gap-4">
+                  <Button className="bg-[#00B3C6] hover:bg-[#009DAD] text-white px-3 py-1 rounded-full text-sm">Get Started</Button>
+                </div>
+
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="md:hidden p-2 text-[#1F242B]"
+                >
+                  {isOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
+              </div>
             </div>
-
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 text-[#1F242B]"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
           </div>
         </div>
       </div>
-
       <AnimatePresence>
         {isOpen && (
           <motion.div
