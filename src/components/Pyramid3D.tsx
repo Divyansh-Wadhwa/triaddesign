@@ -5,17 +5,29 @@ import { useRef } from "react"
 import { Group } from "three"
 import { Environment } from "@react-three/drei"
 
-function PyramidGroup({ target }: { target: { current: { x: number; y: number } } }) {
+function PyramidGroup({
+  target,
+  spinSpeedRef,
+}: {
+  target: { current: { x: number; y: number } }
+  spinSpeedRef: { current: number }
+}) {
   const group = useRef<Group | null>(null)
 
   // separate spin and offset so continuous spin isn't clobbered by lerp
   const spin = useRef(0)
   const offset = useRef({ x: 0, y: 0 })
-  // spinSpeed ref is controlled by wheel/drag gestures from the parent
-  const spinSpeedRef = useRef(0.003)
 
   useFrame(() => {
     if (!group.current) return
+
+    // smoothly approach a small base rotation when idle so the pyramid keeps turning
+    const BASE_SPIN = 0.003
+    // lerp spinSpeed toward BASE_SPIN (small factor) for gentle return
+    spinSpeedRef.current += (BASE_SPIN - spinSpeedRef.current) * 0.002
+    // clamp to safe range
+    spinSpeedRef.current = Math.max(-0.6, Math.min(0.6, spinSpeedRef.current))
+
     // continuous spin uses the mutable spinSpeedRef
     spin.current += spinSpeedRef.current
 
@@ -34,7 +46,7 @@ function PyramidGroup({ target }: { target: { current: { x: number; y: number } 
   const GAP_BOTTOM = 0.45 // middle ↔ bottom
 
   return (
-    <group ref={group}>
+    <group ref={group} position={[0, -0.6, 0]} scale={[1.15, 1.15, 1.15]}>
       {/* 🔺 TOP PYRAMID */}
       <mesh position={[0, 1.4 + GAP_TOP, 0]}>
         <coneGeometry args={[1.2, 1.6, 4]} />
@@ -96,7 +108,7 @@ export function Pyramid3D() {
   // interactive controls
   const dragging = useRef(false)
   const lastPos = useRef({ x: 0, y: 0 })
-  const spinSpeed = useRef(0.003)
+  const spinSpeedRef = useRef(0.003)
 
   function handlePointerDown(e: React.PointerEvent) {
     dragging.current = true
@@ -117,15 +129,15 @@ export function Pyramid3D() {
     // normalize to -0.5..0.5
     const nx = x - 0.5
     const ny = y - 0.5
-    if (dragging.current) {
+      if (dragging.current) {
       // when dragging, allow freer rotation and adjust spin speed by horizontal movement
       const dx = e.clientX - lastPos.current.x
       lastPos.current = { x: e.clientX, y: e.clientY }
       // larger mapping while dragging
       target.current.x = -ny * 0.7
       target.current.y = nx * 1.2
-      // quick spin boost from horizontal drag velocity
-      spinSpeed.current = Math.min(1.5, Math.max(-1.5, spinSpeed.current + dx * 0.0006))
+      // quick spin boost from horizontal drag velocity (reduced sensitivity)
+      spinSpeedRef.current = Math.min(0.6, Math.max(-0.6, spinSpeedRef.current + dx * 0.00045))
     } else {
       // hover mapping (subtle)
       target.current.x = -ny * 0.35
@@ -141,15 +153,15 @@ export function Pyramid3D() {
   }
 
   function handleWheel(e: React.WheelEvent) {
-    // wheel up -> speed up, wheel down -> slow
-    spinSpeed.current = Math.min(2, Math.max(-2, spinSpeed.current - e.deltaY * 0.001))
+    // Intentionally left empty: rotation is controlled only via pointer drag.
+    // Prevent changing `spinSpeedRef` with the scroll wheel per user request.
   }
 
   function handleDoubleClick() {
     // reset
     target.current.x = 0
     target.current.y = 0
-    spinSpeed.current = 0.003
+    spinSpeedRef.current = 0.003
   }
 
   return (
@@ -212,7 +224,7 @@ export function Pyramid3D() {
         <pointLight position={[2, 4, 3]} intensity={0.9} color="#FFD6A5" />
         {/* Cool fill to enhance cyan reflections */}
         <pointLight position={[-2, -2, 4]} intensity={0.6} color="#00D4E8" />
-        <PyramidGroup target={target} />
+        <PyramidGroup target={target} spinSpeedRef={spinSpeedRef} />
         <Environment preset="studio" />
       </Canvas>
     </div>
